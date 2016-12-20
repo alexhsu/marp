@@ -227,6 +227,12 @@ module.exports = class MdsWindow
       @menu.states.viewMode = mode
       @menu.updateMenu()
 
+    previousPage: ->
+        @send 'previousPage'
+
+    nextPage: ->
+        @send 'nextPage'
+
     themeChanged: (theme) ->
       @menu.states.theme = theme
       @menu.updateMenu()

@@ -11,6 +11,7 @@ require 'codemirror/mode/xml/xml'
 require 'codemirror/mode/markdown/markdown'
 require 'codemirror/mode/gfm/gfm'
 require 'codemirror/addon/edit/continuelist'
+require 'codemirror/keymap/vim'
 
 class EditorStates
   rulers: []
@@ -52,6 +53,26 @@ class EditorStates
 
     if @currentPage != page
       @currentPage = page
+      @preview.send 'currentPage', @currentPage if @previewInitialized
+
+    $('#page-indicator').text "Page #{@currentPage} / #{@rulers.length + 1}"
+
+  navPage: (mode, rulers) =>
+    @rulers = rulers if rulers?
+    # page    = 1
+
+    # lineNumber = @codeMirror.getCursor().line || 0
+    # for rulerLine in @rulers
+    #   page++ if rulerLine <= lineNumber
+
+    switch mode
+        when 'next'
+            @currentPage++ if @currentPage < @rulers.length + 1
+        when 'previous'
+            @currentPage-- if @currentPage > 1
+        else
+            @currentPage = 1
+
       @preview.send 'currentPage', @currentPage if @previewInitialized
 
     $('#page-indicator').text "Page #{@currentPage} / #{@rulers.length + 1}"
@@ -140,6 +161,7 @@ do ->
     CodeMirror.fromTextArea($('#editor')[0],
       mode: 'gfm'
       theme: 'marp'
+      keyMap: 'vim'
       lineWrapping: true
       lineNumbers: false
       dragDrop: false
@@ -151,6 +173,13 @@ do ->
 
   # View modes
   $('.viewmode-btn[data-viewmode]').click -> MdsRenderer.sendToMain('viewMode', $(this).attr('data-viewmode'))
+
+
+  # Next Page
+  $('#preview-next').click -> MdsRenderer.sendToMain('nextPage')
+
+  # Previous Page
+  $('#preview-previous').click -> MdsRenderer.sendToMain('previousPage')
 
   # File D&D
   $(document)
@@ -272,6 +301,8 @@ do ->
     .on 'setTheme', (theme) -> editorStates.updateGlobalSetting '$theme', theme
     .on 'themeChanged', (theme) -> MdsRenderer.sendToMain 'themeChanged', theme
     .on 'resourceState', (state) -> loadingState = state
+    .on 'nextPage', -> editorStates.navPage 'next'
+    .on 'previousPage', -> editorStates.navPage 'previous'
 
   # Initialize
   editorStates.codeMirror.focus()

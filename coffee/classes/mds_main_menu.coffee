@@ -152,6 +152,11 @@ module.exports = class MdsMainMenu
               enabled: @window?
               submenu: [{ replacement: 'themes' }]
             }
+            {
+              label: '&Navigate Slide'
+              enabled: @window?
+              submenu: [{ replacement: 'navSlide' }]
+            }
             { type: 'separator' }
             {
               label: 'Toggle &Full Screen'
@@ -231,6 +236,7 @@ module.exports = class MdsMainMenu
             {
               label: '&Markdown'
               enabled: @window?
+              accelerator: 'CmdOrCtrl+1',
               type: if @window? then 'radio' else 'normal'
               checked: @states.viewMode == 'markdown'
               click: => @window.mdsWindow.trigger 'viewMode', 'markdown'
@@ -238,6 +244,7 @@ module.exports = class MdsMainMenu
             {
               label: '1:1 &Slide'
               enabled: @window?
+              accelerator: 'CmdOrCtrl+2',
               type: if @window? then 'radio' else 'normal'
               checked: @states.viewMode == 'screen'
               click: => @window.mdsWindow.trigger 'viewMode', 'screen'
@@ -245,6 +252,7 @@ module.exports = class MdsMainMenu
             {
               label: 'Slide &List'
               enabled: @window?
+              accelerator: 'CmdOrCtrl+3',
               type: if @window? then 'radio' else 'normal'
               checked: @states.viewMode == 'list'
               click: => @window.mdsWindow.trigger 'viewMode', 'list'
@@ -265,6 +273,21 @@ module.exports = class MdsMainMenu
               type: if @window? then 'radio' else 'normal'
               checked: @states.theme == 'gaia'
               click: => @window.mdsWindow.send 'setTheme', 'gaia' unless @window.mdsWindow.freeze
+            }
+          ]
+
+          navSlide: [
+            {
+              label: 'Next Page'
+              enabled: @window?
+              accelerator: 'Ctrl+f',
+              click: => @window.mdsWindow.trigger 'nextPage'
+            }
+            {
+              label: 'Previous Page'
+              enabled: @window?
+              accelerator: 'Ctrl+b',
+              click: => @window.mdsWindow.trigger 'previousPage'
             }
           ]
 
